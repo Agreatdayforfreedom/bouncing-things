@@ -34,42 +34,49 @@ function App() {
   useEffect(() => {
     let frameId: number;
     if (ref?.current) {
-      let bright = 0.6;
       const ctx = ref?.current?.getContext("2d");
       const frame = (time: any) => {
         if (ctx && ref.current && balls.length > 0) {
           ctx.clearRect(0, 0, ref.current.width, ref.current.height);
           for (const ball of balls) {
             ctx.save();
-            // frame(time);
 
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
             ctx.strokeStyle = ball.color;
-            ctx.shadowColor = "white";
-            ctx.shadowBlur = ball.shine;
+            ctx.shadowColor = ball.color;
+            // ctx.shadowColor = ball.color;
+            ctx.shadowBlur = ball.brightness;
+            ctx.lineWidth = ball.brightness / 10;
 
+            if (
+              ball.dx < 1.5 &&
+              ball.dx > -1.5 &&
+              ball.dy < 1.5 &&
+              ball.dy > -1.5
+            ) {
+              ball.dx *= 4;
+              ball.dy *= 4;
+            }
             ctx.stroke();
             ctx.closePath();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-            // let radians = Math.atan2(ball.dy, ball.dx);
-            // let degrees = (180 * radians) / Math.PI;
-            ctx.beginPath();
-            ctx.moveTo(ball.x, ball.y);
-            ctx.lineTo(ball.x + ball.dx * 10, ball.y + ball.dy * 10);
-            ctx.strokeStyle = "#ff00ff";
-            ctx.stroke();
+            // ctx.beginPath();
+            // ctx.moveTo(ball.x, ball.y);
+            // ctx.lineTo(ball.x + ball.dx * 10, ball.y + ball.dy * 10);
+            // ctx.strokeStyle = "#ff00ff";
+            // ctx.stroke();
 
             ctx.restore();
 
+            doShine(ball);
             detectCollisions(
               ref.current.width,
               ref.current.height,
               ball,
               balls
             );
-
             ball.x += ball.dx;
             ball.y += ball.dy;
           }
@@ -82,6 +89,14 @@ function App() {
     return () => cancelAnimationFrame(frameId);
   }, [balls, TotalBalls]);
 
+  function doShine(ball: Ball) {
+    if (ball.shine) {
+      const fn = -1 * ball.util_count ** 2 + 10 * ball.util_count + 5;
+
+      ball.brightness = fn;
+      ball.util_count += 0.1;
+    }
+  }
   return (
     <>
       <header className="header"></header>

@@ -7,8 +7,10 @@ export interface Ball {
   isColliding: boolean;
   index: number;
   radius: number;
-  shine: number;
+  shine: boolean;
+  brightness: number;
   area?: number;
+  util_count: number; //save util number for compute
   mass: number;
 }
 
@@ -21,12 +23,14 @@ export function GenInstances(total: number): Ball[] {
       dx: Math.floor(Math.random() * i * 2 + 1.5),
       dy: Math.floor(Math.random() * i * 2 + 1.5),
       isColliding: false,
-      shine: 0.1,
+      shine: false,
       color: `#${[...Array(6)]
         .map(() => Math.floor(Math.random() * 16).toString(16))
         .join("")}`,
       index: i + 1,
+      brightness: 0,
       mass: Math.floor(Math.random() * 3) + 1,
+      util_count: 0,
       radius: 20,
     };
     ball.area = ball.radius * ball.mass;

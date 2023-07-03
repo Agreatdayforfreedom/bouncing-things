@@ -9,22 +9,15 @@ export function detectCollisions(
 ) {
   let obj1;
   let obj2;
-  // console.log(loop)
   // Reset collision state of all objects
   for (let i = 0; i < balls.length; i++) {
-    // if (ball.isColliding) {
-    // }
-
+    //reset ball brightness
+    if (ball.util_count > 10) {
+      ball.shine = false;
+      ball.brightness = 0;
+      ball.util_count = 0.5;
+    }
     ball.isColliding = false;
-
-    // console.log(ball.shine);
-    // console.log(ball.shine);
-    // if (ball.shine > 5) {
-    //   ball.shine = 0;
-    //   console.log("35");
-    //   //   console.log("clear");
-    // }
-    // ball.shine = false;
   }
   if (ball.x < ball.radius) {
     ball.dx = Math.abs(ball.dx) * restitution;
@@ -61,6 +54,8 @@ export function detectCollisions(
       ) {
         obj1.isColliding = true;
         obj2.isColliding = true;
+        obj1.shine = true;
+        obj2.shine = true;
         let vCollision = { x: obj2.x - obj1.x, y: obj2.y - obj1.y };
         let distance = Math.sqrt(
           (obj2.x - obj1.x) * (obj2.x - obj1.x) +
