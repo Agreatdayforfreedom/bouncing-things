@@ -3,6 +3,7 @@
   margin: 0px;
   box-sizing: border-box;
   /* height: 100%; */
+  scrollbar-width: 0;
 }
 span {
   color: white;
@@ -10,7 +11,10 @@ span {
 }
 canvas {
   border: 1px solid black;
-  margin: 1rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
 }
 .input {
   width: 60;
@@ -27,14 +31,14 @@ body {
 }
 
 .header {
-  width: 100%;
+  /* width: 100%; */
   height: 40px;
   background-color: transparent;
 }
 
 .aside {
   background-color: transparent;
-  height: 100vh;
+  /* height: 100vh; */
   width: 40px;
 }
 

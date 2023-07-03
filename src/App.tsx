@@ -10,20 +10,40 @@ import "./App.css";
 import { Ball, GenInstances } from "./Ball";
 import { detectCollisions } from "./Collider";
 
+import React, { useLayoutEffect } from "react";
+
+function useWindowSize() {
+  const [size, setSize] = useState([0, 0]);
+  useLayoutEffect(() => {
+    function updateSize() {
+      // ref.current.widg
+      setSize([window.innerWidth, window.innerHeight]);
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+  return size;
+}
+
 function App() {
   const [TotalBalls, setTotalBalls] = useState<number>(10);
   // const [balls, setBalls] = useState<Ball[]>([]);
   const balls: Ball[] = [];
-  const speed = 0.2;
   const ref = useRef<HTMLCanvasElement>(null);
 
   const changeTotalBalls = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(parseInt(e.target.value));
     if (parseInt(e.target.value) > 100) return;
     if (!Number.isNaN(parseInt(e.target.value)))
       setTotalBalls(parseInt(e.target.value));
   };
-
+  const size = useWindowSize();
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.width = size[0];
+      ref.current.height = size[1];
+    }
+  }, [size]);
   useEffect(() => {
     if (ref.current) {
       const total = GenInstances(TotalBalls);
@@ -45,21 +65,28 @@ function App() {
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
             ctx.strokeStyle = ball.color;
             ctx.shadowColor = ball.color;
+            // ctx.lineDashOffset = 1;
+            if (ball.dashed) {
+              ctx.setLineDash([1, 3]);
+            }
+
             // ctx.shadowColor = ball.color;
             ctx.shadowBlur = ball.brightness;
             ctx.lineWidth = ball.brightness / 10;
-
             if (
               ball.dx < 1.5 &&
               ball.dx > -1.5 &&
               ball.dy < 1.5 &&
               ball.dy > -1.5
             ) {
-              ball.dx *= 4;
-              ball.dy *= 4;
+              ball.dx *= 5;
+              ball.dy *= 5;
+              ball.accelerate = true;
             }
+            // } else ball.accelerate = false;
             ctx.stroke();
             ctx.closePath();
+
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
             // ctx.beginPath();
@@ -71,6 +98,8 @@ function App() {
             ctx.restore();
 
             doShine(ball);
+            burnFigure(ctx, ball);
+            storeLastPosition(ball);
             detectCollisions(
               ref.current.width,
               ref.current.height,
@@ -88,6 +117,42 @@ function App() {
 
     return () => cancelAnimationFrame(frameId);
   }, [balls, TotalBalls]);
+
+  var motionTrailLength = 10;
+
+  function burnFigure(ctx: CanvasRenderingContext2D, ball: Ball) {
+    if (ball.accelerate) {
+      if (ball.dx < 4 && ball.dx > -4 && ball.dy < 4 && ball.dx > -4) {
+        ball.accelerate = false;
+        return;
+      }
+      for (var i = 0; i < ball.positions.length; i++) {
+        //do draw
+        var ratio = (i + 1) / ball.positions.length;
+        ctx.beginPath();
+        ctx.arc(
+          ball.positions[i].x,
+          ball.positions[i].y,
+          (ball.radius * (i + 1)) / 7.5,
+          0,
+          2 * Math.PI,
+          true
+        );
+        ctx.fillStyle = `${ball.color}${Math.floor(ratio)}9`;
+        ctx.fill();
+      }
+    }
+  }
+  function storeLastPosition(ball: Ball) {
+    // push an item
+    ball.positions.push({
+      x: ball.x,
+      y: ball.y,
+    }); //get rid of first item
+    if (ball.positions.length > motionTrailLength) {
+      ball.positions.shift();
+    }
+  }
 
   function doShine(ball: Ball) {
     if (ball.shine) {
@@ -116,7 +181,7 @@ function App() {
             <span>max: 1</span>
             <span>current: {TotalBalls}</span>
           </div>
-          <canvas ref={ref} id="tutorial" width="800" height="600"></canvas>
+          <canvas ref={ref} id="objects"></canvas>
         </section>
       </main>
     </>
