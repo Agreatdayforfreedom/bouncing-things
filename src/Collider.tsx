@@ -38,6 +38,7 @@ export function detectCollisions(
   // Start checking for collisions
   for (let i = 0; i < balls.length; i++) {
     obj1 = balls[i];
+    if (obj1.immunity) break;
     for (let j = i + 1; j < balls.length; j++) {
       obj2 = balls[j];
 

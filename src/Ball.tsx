@@ -7,6 +7,7 @@ export interface Ball {
   color: string;
   isColliding: boolean;
   accelerate: boolean;
+  immunity: boolean;
   index: number;
   radius: number;
   dashed: boolean;
@@ -30,6 +31,7 @@ export function GenInstances(total: number): Ball[] {
       accelerate: false,
       dashed: Math.random() * 10 > 5,
       shine: false,
+      immunity: true, //the ball has immunity the first 500ms
       color: `#${[...Array(6)]
         .map(() => Math.floor(Math.random() * 16).toString(16))
         .join("")}`,

@@ -33,7 +33,7 @@ function App() {
   const ref = useRef<HTMLCanvasElement>(null);
 
   const changeTotalBalls = (e: ChangeEvent<HTMLInputElement>) => {
-    if (parseInt(e.target.value) > 100) return;
+    if (parseInt(e.target.value) > 10) return setTotalBalls(10);
     if (!Number.isNaN(parseInt(e.target.value)))
       setTotalBalls(parseInt(e.target.value));
   };
@@ -43,19 +43,17 @@ function App() {
       ref.current.width = size[0];
       ref.current.height = size[1];
     }
-  }, [size]);
-  useEffect(() => {
     if (ref.current) {
       const total = GenInstances(TotalBalls);
       balls.push(...total);
     }
-  }, [TotalBalls]);
+  }, [TotalBalls, size]);
 
   useEffect(() => {
     let frameId: number;
     if (ref?.current) {
       const ctx = ref?.current?.getContext("2d");
-      const frame = (time: any) => {
+      const frame = (time: number) => {
         if (ctx && ref.current && balls.length > 0) {
           ctx.clearRect(0, 0, ref.current.width, ref.current.height);
           for (const ball of balls) {
@@ -69,7 +67,7 @@ function App() {
             if (ball.dashed) {
               ctx.setLineDash([1, 3]);
             }
-
+            if (ball.immunity && time > 500) ball.immunity = false;
             // ctx.shadowColor = ball.color;
             ctx.shadowBlur = ball.brightness;
             ctx.lineWidth = ball.brightness / 10;
@@ -82,7 +80,11 @@ function App() {
               ball.dx *= 5;
               ball.dy *= 5;
               ball.accelerate = true;
+            } else {
+              ball.dx -= ball.dx * 0.01;
+              ball.dy -= ball.dy * 0.01;
             }
+
             // } else ball.accelerate = false;
             ctx.stroke();
             ctx.closePath();
@@ -173,11 +175,12 @@ function App() {
               type="number"
               className="input"
               defaultValue={TotalBalls}
+              value={TotalBalls}
               onChange={changeTotalBalls}
               max={100}
               min={1}
             />
-            <span>max: 100</span>
+            <span>max: 10</span>
             <span>max: 1</span>
             <span>current: {TotalBalls}</span>
           </div>
