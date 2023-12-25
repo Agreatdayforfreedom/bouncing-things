@@ -20,7 +20,6 @@ export interface Ball {
 
   image: string;
 }
-
 export function GenInstances(total: number): Ball[] {
   let set: Ball[] = [];
   for (let i = 0; i < total; i++) {
@@ -40,13 +39,13 @@ export function GenInstances(total: number): Ball[] {
         .join("")}`,
       index: i + 1,
       drawDirVector: false,
-      // image: "/public/4.png",
+      // image: "/2.png",
       // image: i + 1 <= 4 ? `/public/${i}.png` : "/public/poe.jpg",
       brightness: 0,
       mass: Math.floor(Math.random() * 3) + 1,
       util_count: 0,
       radius: Math.floor(Math.random() * 30),
-      image: i % 2 == 0 ? "/public/poe.jpg" : "/public/1.png",
+      image: i % 2 == 0 ? "/poe.jpg" : "/1.png",
 
       area: 0,
     };
