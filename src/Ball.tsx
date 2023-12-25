@@ -13,9 +13,12 @@ export interface Ball {
   dashed: boolean;
   shine: boolean;
   brightness: number;
-  area?: number;
+  area: number;
   util_count: number; //save util number for compute
   mass: number;
+  drawDirVector: boolean;
+
+  image: string;
 }
 
 export function GenInstances(total: number): Ball[] {
@@ -36,12 +39,18 @@ export function GenInstances(total: number): Ball[] {
         .map(() => Math.floor(Math.random() * 16).toString(16))
         .join("")}`,
       index: i + 1,
+      drawDirVector: false,
+      // image: "/public/4.png",
+      // image: i + 1 <= 4 ? `/public/${i}.png` : "/public/poe.jpg",
       brightness: 0,
       mass: Math.floor(Math.random() * 3) + 1,
       util_count: 0,
-      radius: 10,
+      radius: Math.floor(Math.random() * 30),
+      image: i % 2 == 0 ? "/public/poe.jpg" : "/public/1.png",
+
+      area: 0,
     };
-    ball.area = ball.radius * ball.mass;
+    ball.area = Math.PI * (ball.radius * ball.radius);
     set.push(ball);
   }
 

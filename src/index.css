@@ -5,9 +5,9 @@
   /* height: 100%; */
   scrollbar-width: 0;
 }
-input {
+/* input {
   all: unset;
-}
+} */
 span {
   color: white;
   margin-left: 5px;
@@ -97,4 +97,11 @@ body {
   to {
     width: 100%;
   }
+}
+
+.checkbox {
+  border: 1px black solid;
+  height: 16px;
+  width: 16px;
+  /* position: absolute; */
 }
