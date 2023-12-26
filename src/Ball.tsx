@@ -1,10 +1,16 @@
+type Vec2 = { x: number; y: number };
+
+export function Vec2_init(): Vec2 {
+  return { x: 0, y: 0 };
+}
+
 export interface Ball {
   x: number;
   y: number;
-  positions: Array<{ x: number; y: number }>;
   dx: number;
   dy: number;
   color: string;
+  positions: Array<Vec2>;
   isColliding: boolean;
   accelerate: boolean;
   immunity: boolean;
@@ -17,11 +23,14 @@ export interface Ball {
   util_count: number; //save util number for compute
   mass: number;
   drawDirVector: boolean;
-
+  positionOnAcc: Vec2;
+  texts: Array<Vec2 & { dir: Vec2; alpha: number }>;
+  inverseDir: Vec2; // inverse direction of the ball
   image: string;
 }
 export function GenInstances(total: number): Ball[] {
   let set: Ball[] = [];
+
   for (let i = 0; i < total; i++) {
     const ball: Ball = {
       x: Math.floor(Math.random() * i * 2 + 1),
@@ -39,11 +48,22 @@ export function GenInstances(total: number): Ball[] {
         .join("")}`,
       index: i + 1,
       drawDirVector: false,
-      // image: "/2.png",
-      // image: i + 1 <= 4 ? `/public/${i}.png` : "/public/poe.jpg",
       brightness: 0,
       mass: Math.floor(Math.random() * 3) + 1,
+      positionOnAcc: Vec2_init(),
+      inverseDir: Vec2_init(),
       util_count: 0,
+      texts: [
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+        { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
+      ],
+
       radius: Math.floor(Math.random() * 30),
       image: i % 2 == 0 ? "/poe.jpg" : "/1.png",
 

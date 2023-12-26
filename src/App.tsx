@@ -7,7 +7,7 @@ import {
 } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
-import { Ball, GenInstances } from "./Ball";
+import { Ball, GenInstances, Vec2_init } from "./Ball";
 import { detectCollisions } from "./Collider";
 
 import React, { useLayoutEffect } from "react";
@@ -95,8 +95,8 @@ function App() {
             //   ctx.beginPath();
             //   ctx.moveTo(ball.x, ball.y);
             //   ctx.lineTo(
-            //     ball.x + ball.dx * Math.abs(ball.dx) * 5, // get 1, -1 direction
-            //     ball.y + ball.dy * Math.abs(ball.dy) * 5
+            // ball.x + ball.dx * Math.abs(ball.dx) * 5, // get 1, -1 direction
+            // ball.y + ball.dy * Math.abs(ball.dy) * 5
             //   );
             //   ctx.strokeStyle = "red";
             //   ctx.stroke();
@@ -177,8 +177,11 @@ function App() {
 
             // ctx.restore();
 
+            //*funtions
             doShine(ball);
-            burnFigure(ctx, ball);
+            // burnFigure(ctx, ball);
+            storePositionOnAcc(ball);
+            tailText(ctx, ball);
             storeLastPosition(ball);
             detectCollisions(
               ref.current.width,
@@ -199,6 +202,49 @@ function App() {
   }, [balls, TotalBalls]);
 
   var motionTrailLength = 10;
+
+  function tailText(ctx: CanvasRenderingContext2D, ball: Ball) {
+    if (ball.texts[0].x) {
+      if (ball.dx < 4 && ball.dx > -4 && ball.dy < 4 && ball.dx > -4) {
+        // console.log("dissapear")
+        console.log(ball.texts);
+        ball.accelerate = false;
+        for (const text of ball.texts) {
+          text.x = 0;
+          text.y = 0;
+        }
+        return;
+      }
+      // console.log(ball.texts, "<<");
+      // console.log("gooo");
+      // if (ball && ball.positions.length > 0)
+      for (var i = 0; i < ball.texts.length; i++) {
+        const text = ball.texts[i];
+        ctx.beginPath();
+        ctx.fillText("poe", ball.texts[i].x, ball.texts[i].y);
+        //! to
+        // console.log(ball.positionOnAcc, i);
+        //ball.texts[i].dir * i + 1 * ball.inverseDir.y
+        //(ball.texts[i].dir * i + 1) * ball.inverseDir.y
+        let rand = 1;
+        // rand *= Math.round(Math.random()) ? 1 : -1;
+
+        text.x += text.dir.x * 2; //2 speed;
+        text.y += text.dir.y * 2;
+
+        // rand *= Math.round(Math.random()) ? 1 : -1;
+
+        //   ball.texts[i].dir * Math.abs(ball.inverseDir.x) * 0.01;
+        //   ball.texts[i].dir * Math.abs(ball.inverseDir.y) * 0.01;
+        // console.log(text.dir, i);
+        ctx.font = "serif";
+        ctx.fillStyle = "rgba(255, 255, 255, " + text.alpha + ")";
+        text.alpha -= 0.025;
+        ctx.save();
+        ctx.closePath();
+      }
+    }
+  }
 
   function burnFigure(ctx: CanvasRenderingContext2D, ball: Ball) {
     if (ball.accelerate) {
@@ -223,6 +269,27 @@ function App() {
       }
     }
   }
+
+  function storePositionOnAcc(ball: Ball) {
+    if (ball.accelerate) {
+      for (const text of ball.texts) {
+        text.x = ball.x;
+        text.y = ball.y;
+        text.alpha = 1;
+        let dx = Math.random() * 2;
+        let dy = Math.random() * 2;
+        dx *= Math.round(Math.random()) ? 1 : -1;
+        dy *= Math.round(Math.random()) ? 1 : -1;
+        text.dir.x = dx;
+        text.dir.y = dy;
+      }
+      ball.inverseDir = { x: ball.dx * -1, y: ball.dy * -1 }; //!
+
+      ball.accelerate = false;
+      // if (ball.index === 1) console.log(ball.positionOnAcc);
+    }
+  }
+
   function storeLastPosition(ball: Ball) {
     // push an item
     ball.positions.push({
@@ -250,7 +317,6 @@ function App() {
             <input
               type="number"
               className="input"
-              defaultValue={TotalBalls}
               value={TotalBalls}
               onChange={changeTotalBalls}
               max={100}
