@@ -12,11 +12,11 @@ export function detectCollisions(
   // Reset collision state of all objects
   for (let i = 0; i < balls.length; i++) {
     //reset ball brightness
-    if (ball.util_count > 10) {
-      ball.shine = false;
-      ball.brightness = 0;
-      ball.util_count = 0.5;
-    }
+    // if (ball.util_count > 10) {
+    //   ball.shine = false;
+    //   ball.brightness = 0;
+    //   ball.util_count = 0.5;
+    // }
     ball.isColliding = false;
   }
   if (ball.x < ball.radius) {
@@ -50,9 +50,11 @@ export function detectCollisions(
           obj1.radius,
           obj2.x,
           obj2.y,
-          obj2.radius
+          obj2.radius,
+          obj1.util_count
         )
       ) {
+        obj1.util_count = 1;
         obj1.isColliding = true;
         obj2.isColliding = true;
         obj1.shine = true;
@@ -77,10 +79,12 @@ export function detectCollisions(
           break;
         }
         let impulse = (2 * speed) / (obj1.mass + obj2.mass);
-        obj1.dx -= impulse * obj2.mass * vCollisionNorm.x;
-        obj1.dy -= impulse * obj2.mass * vCollisionNorm.y;
-        obj2.dx += impulse * obj1.mass * vCollisionNorm.x;
-        obj2.dy += impulse * obj1.mass * vCollisionNorm.y;
+        // obj1.dx = 0;
+        // obj2.dx = 0;
+        obj1.dx -= impulse * restitution * obj2.mass * vCollisionNorm.x;
+        obj1.dy -= impulse * restitution * obj2.mass * vCollisionNorm.y;
+        obj2.dx += impulse * restitution * obj1.mass * vCollisionNorm.x;
+        obj2.dy += impulse * restitution * obj1.mass * vCollisionNorm.y;
       }
     }
   }
@@ -92,13 +96,24 @@ function circleIntersect(
   r1: number,
   x2: number,
   y2: number,
-  r2: number
+  r2: number,
+  uc: number
 ) {
   // Calculate the distance between the two circles
-  let squareDistance = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+  //! alternatives
+  //! 1
+  // let dx = x1 - x2;
+  // let dy = y1 - y2;
+  // let squareDistance1 = Math.sqrt(dx * dx + dy * dy);
 
+  //! 2
+  // let squareDistance = Math.hypot(x1 - x2, y1 - y2);
+  //! 3
+  let squareDistance = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+  // squareDistance * 2;
   // When the distance is smaller or equal to the sum
   // of the two radius, the circles touch or overlap
+  // return squareDistance <= r1 + r2;
   return squareDistance <= (r1 + r2) * (r1 + r2);
 }
 

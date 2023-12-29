@@ -11,6 +11,7 @@ import { Ball, GenInstances, Vec2_init } from "./Ball";
 import { detectCollisions } from "./Collider";
 
 import React, { useLayoutEffect } from "react";
+import { g } from "./constants";
 
 function useWindowSize() {
   const [size, setSize] = useState([0, 0]);
@@ -74,20 +75,12 @@ function App() {
         if (ctx && ref.current && balls.length > 0) {
           ctx.clearRect(0, 0, ref.current.width, ref.current.height);
           for (const ball of balls) {
-            // if (drawVectorCheck) {
-            //   ball.drawDirVector = true;
-            // }
             let img = new Image();
 
-            img.src = ball.image;
-            // console.log(ball.image);
-            // ctx.save();
-            // var pattern = ctx.createPattern(image, "repeat");
+            img.src = ball.image; //!todo
+
             img.onload = function () {
               image_loading = true;
-              // ctx.beginPath();
-              // ctx.fill();
-              // console.log("drawing");
             };
 
             //!try to draw th vector
@@ -100,14 +93,13 @@ function App() {
             //   );
             //   ctx.strokeStyle = "red";
             //   ctx.stroke();
-            //   // ctx.restore();
-            //   // ctx.save();
-            //   // ctx.closePath();
+            // ctx.restore();
+            // ctx.save();
+            // ctx.closePath();
             // }
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
             ctx.fill();
-            // ctx.drawImage(img, ball.x - img.width / 2, ball.y - img.width / 2);
             ctx.save();
             ctx.clip();
             ctx.drawImage(
@@ -117,69 +109,35 @@ function App() {
               ball.radius * 2,
               ball.radius * 2
             );
-            // ctx.fill();
             ctx.closePath();
             ctx.restore();
-            // ctx.globalCompositeOperation = "destination-in";
-            // console.log(ball.area);
-            // if (pattern) {
-            //   ctx.strokeStyle = pattern;
-            // }
-            // ctx.fill();
 
-            // ctx.stroke();
-            // ctx.shadowColor = ball.color; !
-
-            // poe(img, ball.x);
-            // const pattern = ctx.createPattern(image, "repeat");
-            // if (pattern) {
-            // ctx.fillStyle = pattern;
-            //! temporary canvas
-            // }
-            // ctx.save();
-            // ctx.globalCompositeOperation = "source-in";
-            // ctx.drawImage(image, 0, 0);
-            // ctx.stroke();
-            // ctx.restore();
-            // ctx.fill();
-
-            // ctx.lineDashOffset = 1;
-            // if (ball.dashed) {
-            //   ctx.setLineDash([1, 3]);
-            // }
             if (ball.immunity && time > 500) ball.immunity = false;
             // ctx.shadowColor = ball.color;
             ctx.shadowBlur = ball.brightness;
             ctx.lineWidth = ball.brightness / 10;
-            if (
-              ball.dx < 1.5 &&
-              ball.dx > -1.5 &&
-              ball.dy < 1.5 &&
-              ball.dy > -1.5
-            ) {
-              ball.dx *= 5;
-              ball.dy *= 5;
-              ball.accelerate = true;
-            } else {
-              ball.dx -= ball.dx * 0.01;
-              ball.dy -= ball.dy * 0.01;
-            }
+
+            // if (
+            //   ball.dx < 1.5 &&
+            //   ball.dx > -1.5 &&
+            //   ball.dy < 1.5 &&
+            //   ball.dy > -1.5
+            // ) {
+            //   ball.dx *= 5;
+            //   ball.dy *= 5;
+            //   ball.accelerate = true;
+            // } else {
+            //   ball.dx -= ball.dx * 0.01;
+            //   ball.dy -= ball.dy * 0.01;
+            // }
 
             // } else ball.accelerate = false;
 
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-            // ctx.beginPath();
-            // ctx.moveTo(ball.x, ball.y);
-            // ctx.lineTo(ball.x + ball.dx * 10, ball.y + ball.dy * 10);
-            // ctx.strokeStyle = "#ff00ff";
-            // ctx.stroke();
-
-            // ctx.restore();
-
-            //*funtions
+            //*functions
             doShine(ball);
-            // burnFigure(ctx, ball);
+            burnFigure(ctx, ball);
             storePositionOnAcc(ball);
             tailText(ctx, ball);
             storeLastPosition(ball);
@@ -204,11 +162,10 @@ function App() {
   var motionTrailLength = 10;
 
   function tailText(ctx: CanvasRenderingContext2D, ball: Ball) {
-    if (ball.texts[0].x) {
+    if (ball.isColliding && ball.texts[0].x) {
       if (ball.dx < 4 && ball.dx > -4 && ball.dy < 4 && ball.dx > -4) {
         // console.log("dissapear")
-        console.log(ball.texts);
-        ball.accelerate = false;
+        // ball.accelerate = false;
         for (const text of ball.texts) {
           text.x = 0;
           text.y = 0;
@@ -271,7 +228,7 @@ function App() {
   }
 
   function storePositionOnAcc(ball: Ball) {
-    if (ball.accelerate) {
+    if (ball.isColliding) {
       for (const text of ball.texts) {
         text.x = ball.x;
         text.y = ball.y;
@@ -285,7 +242,7 @@ function App() {
       }
       ball.inverseDir = { x: ball.dx * -1, y: ball.dy * -1 }; //!
 
-      ball.accelerate = false;
+      // ball.accelerate = false;
       // if (ball.index === 1) console.log(ball.positionOnAcc);
     }
   }

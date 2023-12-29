@@ -49,7 +49,7 @@ export function GenInstances(total: number): Ball[] {
       index: i + 1,
       drawDirVector: false,
       brightness: 0,
-      mass: Math.floor(Math.random() * 3) + 1,
+      mass: 0,
       positionOnAcc: Vec2_init(),
       inverseDir: Vec2_init(),
       util_count: 0,
@@ -64,12 +64,12 @@ export function GenInstances(total: number): Ball[] {
         { ...Vec2_init(), dir: Vec2_init(), alpha: 1 },
       ],
 
-      radius: Math.floor(Math.random() * 30),
-      image: i % 2 == 0 ? "/poe.jpg" : "/1.png",
-
+      radius: Math.floor(Math.random() * (30 - 15 + 1)) + 15,
+      image: i + 1 <= 5 ? `/${i + 1}.png` : "/4.png",
       area: 0,
     };
     ball.area = Math.PI * (ball.radius * ball.radius);
+    ball.mass = 2 * Math.PI * ball.radius ** 2;
     set.push(ball);
   }
 
