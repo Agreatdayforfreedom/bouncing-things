@@ -34,7 +34,7 @@ function App() {
     <>
       <MainProvider>
         <main className="main">
-          {!hiddenContent && <Content hidden={hiddenContent} />}
+          {!hiddenContent && <Content />}
           <button
             className="hidden-content-btn"
             onClick={() => setHiddenContent(!hiddenContent)}
